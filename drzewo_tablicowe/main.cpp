@@ -3,7 +3,6 @@
 #include <string>
 using namespace std;
 //https://eduinf.waw.pl/inf/utils/002_roz/mp001.php
-
 struct Lisc {
     int wartosc;
     int indexOjca;
