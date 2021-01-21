@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1611248869 source:c:\projects\codeblocks\drzewo_tablicowe\main.cpp
+	<iostream>
+	<limits>
+	<string>
+

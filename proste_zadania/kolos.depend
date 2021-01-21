@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1516208783 source:c:\projects\codeblocks\kolos\main.c
+	<stdio.h>
+	<stdlib.h>
+

@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1516802977 source:c:\projects\codeblocks\silnia\main.c
+	<stdio.h>
+	<stdlib.h>
+
+1514965064 source:c:\projects\codeblocks\silnia\main.cpp
+	<iostream>
+

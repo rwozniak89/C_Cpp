@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1611006900 source:c:\projects\codeblocks\listy_rozne\main.cpp
+	<iostream>
+	<algorithm>
+	<iostream>
+	<list>
+	<chrono>
+
