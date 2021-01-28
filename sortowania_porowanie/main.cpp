@@ -5,6 +5,8 @@
 
 #include <sys/time.h>
 
+#include <dirent.h>
+
 using namespace std;
 
 
@@ -294,101 +296,137 @@ void pomiarCzasuStopIWyniki(struct timeval* begin, struct timeval* end){
     cout << "Czas wykonania: " << elapsed <<  "  sek. " << endl;
 }
 
+int przeszukiwanieFolderu(string tablicaPlikow[], int tablicaRozmiarowPlikow[], int * licznaPlikow){
+    DIR *dir;
+    struct dirent *ent;
+
+    if ((dir = opendir (".\\")) != NULL) {
+      /* print all the files and directories within directory */
+
+      while ((ent = readdir (dir)) != NULL) {
+        string temp = ent->d_name;
+        if(temp.substr(0,3) == "WE_")
+        {
+            //cout << temp << endl;
+            tablicaPlikow[*licznaPlikow] = temp;
+            string temp2 = (temp.substr(6, temp.length() -4 -6));
+            //cout << temp2 << endl;
+            tablicaRozmiarowPlikow[*licznaPlikow] = atoi(temp2.c_str());
+            (*licznaPlikow)++;
+        }
+      }
+      closedir (dir);
+    } else {
+      /* could not open directory */
+      perror ("");
+      return EXIT_FAILURE;
+    }
+
+
+    for (int i = 0; i < (*licznaPlikow); i++)
+    {
+        cout << "Znaleziono pliki" << tablicaPlikow[i] << ", o rozmiarze: " << tablicaRozmiarowPlikow[i] << endl;
+    }
+}
+
 int main()
 {
     cout << "Program do porownania sortowania!!!" << endl;
 
 
-    int rozmiar = 50000;
+    int rozmiar = 100000;
     int dane[rozmiar];
+    int daneKopia[rozmiar];
+    struct timeval begin, end;
 
     //int n = sizeof(dane)/sizeof(dane[0]); //dynamicznyc pomiar rozmiaru tablicy
     //cout << n << endl;
 
-
-    string fileName = "WE_NP_100000.txt" ;
-
-
-    wczytywaniePliku1(dane, fileName, rozmiar);
-    //wyswietlTablice(dane, rozmiar);
+    string tablicaPlikow[100];
+    int tablicaRozmiarowPlikow[100];
+    int licznaPlikow= 0;
 
 
-    //TEST nr 1
-    int dane1[rozmiar];
-    kopiowanieTablicy(dane, dane1, rozmiar);
+    //przesukujemy wszsytkie pliki
+    przeszukiwanieFolderu(tablicaPlikow, tablicaRozmiarowPlikow, &licznaPlikow);
+    //albo tylko jeden
+    //tablicaPlikow[0] = "WE_NP_100000.txt";
+    //tablicaRozmiarowPlikow[0] = 50000;
+    //licznaPlikow=1;
 
-    struct timeval begin1, end1;
-    pomiarCzasuStart(&begin1);
+    for(int k = 0; k< licznaPlikow; k++){
 
-    bubbleSort(dane1,rozmiar);
+        rozmiar = tablicaRozmiarowPlikow[k];
 
-    pomiarCzasuStopIWyniki(&begin1,&end1);
-    //wyswietlTablice(dane1, rozmiar);
+        string fileName = tablicaPlikow[k].c_str();
 
-    //TEST nr 2
-    int dane2[rozmiar];
-    kopiowanieTablicy(dane, dane2, rozmiar);
+        wczytywaniePliku1(dane, fileName, rozmiar);
+        //wyswietlTablice(dane, rozmiar);
 
-    struct timeval begin2, end2;
-    pomiarCzasuStart(&begin2);
-
-    cout << "...sortowanie przez laczenie..." << endl;
-    merge_sort(dane2, 0, rozmiar-1);
-
-    pomiarCzasuStopIWyniki(&begin2,&end2);
-    //wyswietlTablice(dane1, rozmiar);
-
-    //TEST nr 3
-    int dane3[rozmiar];
-    kopiowanieTablicy(dane, dane3, rozmiar);
-
-    struct timeval begin3, end3;
-    pomiarCzasuStart(&begin3);
-
-    cout << "...sortowanie przez laczenie v2..." << endl;
-    mergeSort2(dane3, 0, rozmiar-1);
-
-    pomiarCzasuStopIWyniki(&begin3,&end3);
-    //wyswietlTablice(dane1, rozmiar);
+        cout << "badanie dla pliku: " << tablicaPlikow[k] << ", rozmiar tablicy:" << tablicaRozmiarowPlikow[k] << endl;
 
 
-    //TEST nr 4
-    int dane4[rozmiar];
-    kopiowanieTablicy(dane, dane4, rozmiar);
+        //TEST nr 1
+        kopiowanieTablicy(dane, daneKopia, rozmiar);
+        pomiarCzasuStart(&begin);
 
-    struct timeval begin4, end4;
-    pomiarCzasuStart(&begin4);
+        bubbleSort(daneKopia,rozmiar);
 
-    selectionSort(dane4,rozmiar);
+        pomiarCzasuStopIWyniki(&begin,&end);
+        //wyswietlTablice(daneKopia, rozmiar);
 
-    pomiarCzasuStopIWyniki(&begin4,&end4);
-    //wyswietlTablice(dane1, rozmiar);
+        //TEST nr 2
+        kopiowanieTablicy(dane, daneKopia, rozmiar);
+        pomiarCzasuStart(&begin);
+
+        cout << "...sortowanie przez laczenie..." << endl;
+        merge_sort(daneKopia, 0, rozmiar-1);
+
+        pomiarCzasuStopIWyniki(&begin,&end);
+        //wyswietlTablice(daneKopia, rozmiar);
+
+        //TEST nr 3
+        kopiowanieTablicy(dane, daneKopia, rozmiar);
+        pomiarCzasuStart(&begin);
+
+        cout << "...sortowanie przez laczenie v2..." << endl;
+        mergeSort2(daneKopia, 0, rozmiar-1);
+
+        pomiarCzasuStopIWyniki(&begin,&end);
+        //wyswietlTablice(daneKopia, rozmiar);
 
 
-    //TEST nr 5
-    int dane5[rozmiar];
-    kopiowanieTablicy(dane, dane5, rozmiar);
+        //TEST nr 4
+        kopiowanieTablicy(dane, daneKopia, rozmiar);
+        pomiarCzasuStart(&begin);
 
-    struct timeval begin5, end5;
-    pomiarCzasuStart(&begin5);
+        selectionSort(daneKopia,rozmiar);
 
-    insertionSort(dane5,rozmiar);
-
-    pomiarCzasuStopIWyniki(&begin5,&end5);
-    //wyswietlTablice(dane1, rozmiar);
+        pomiarCzasuStopIWyniki(&begin,&end);
+        //wyswietlTablice(daneKopia, rozmiar);
 
 
-    //TEST nr 5
-    int dane6[rozmiar];
-    kopiowanieTablicy(dane, dane6, rozmiar);
+        //TEST nr 5
+        kopiowanieTablicy(dane, daneKopia, rozmiar);
+        pomiarCzasuStart(&begin);
 
-    struct timeval begin6, end6;
-    pomiarCzasuStart(&begin6);
+        insertionSort(daneKopia,rozmiar);
 
-    heapSort(dane6,rozmiar);
+        pomiarCzasuStopIWyniki(&begin,&end);
+        //wyswietlTablice(daneKopia, rozmiar);
 
-    pomiarCzasuStopIWyniki(&begin6,&end6);
-    //wyswietlTablice(dane1, rozmiar);
+
+        //TEST nr 5
+        kopiowanieTablicy(dane, daneKopia, rozmiar);
+        pomiarCzasuStart(&begin);
+
+        heapSort(daneKopia,rozmiar);
+
+        pomiarCzasuStopIWyniki(&begin,&end);
+        //wyswietlTablice(daneKopia, rozmiar);
+
+        cout << endl;
+    }
 
 
     return 0;

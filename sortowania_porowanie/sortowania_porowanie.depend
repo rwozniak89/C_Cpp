@@ -1,7 +1,8 @@
 # depslib dependency file v1.0
-1611857030 source:c:\projects\codeblocks\sortowania_porowanie\main.cpp
+1611859568 source:c:\projects\codeblocks\sortowania_porowanie\main.cpp
 	<iostream>
 	<fstream>
 	<cstdlib>
 	<sys/time.h>
+	<dirent.h>
 
