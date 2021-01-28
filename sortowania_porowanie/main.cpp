@@ -126,6 +126,141 @@ void merge_sort(int *arr, int low, int high)
 }
 // Merge sort
 
+// Merges two subarrays of arr[].
+// First subarray is arr[l..m]
+// Second subarray is arr[m+1..r]
+void merge2(int arr[], int l, int m, int r)
+{
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    // Create temp arrays
+    int L[n1], R[n2];
+
+    // Copy data to temp arrays L[] and R[]
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = arr[m + 1 + j];
+
+    // Merge the temp arrays back into arr[l..r]
+
+    // Initial index of first subarray
+    int i = 0;
+
+    // Initial index of second subarray
+    int j = 0;
+
+    // Initial index of merged subarray
+    int k = l;
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        }
+        else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of
+    // L[], if there are any
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of
+    // R[], if there are any
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+// l is for left index and r is
+// right index of the sub-array
+// of arr to be sorted */
+void mergeSort2(int arr[],int l,int r){
+    if(l>=r){
+        return;//returns recursively
+    }
+    int m = (l+r-1)/2;
+    mergeSort2(arr,l,m);
+    mergeSort2(arr,m+1,r);
+    merge2(arr,l,m,r);
+}
+
+/* Function to sort an array using insertion sort*/
+void insertionSort(int arr[], int n)
+{
+    cout << "...Sortowanie przez wstawianie ..." << endl;
+    int i, key, j;
+    for (i = 1; i < n; i++)
+    {
+        key = arr[i];
+        j = i - 1;
+
+        /* Move elements of arr[0..i-1], that are
+        greater than key, to one position ahead
+        of their current position */
+        while (j >= 0 && arr[j] > key)
+        {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+// To heapify a subtree rooted with node i which is
+// an index in arr[]. n is size of heap
+void heapify(int arr[], int n, int i)
+{
+    int largest = i; // Initialize largest as root
+    int l = 2 * i + 1; // left = 2*i + 1
+    int r = 2 * i + 2; // right = 2*i + 2
+
+    // If left child is larger than root
+    if (l < n && arr[l] > arr[largest])
+        largest = l;
+
+    // If right child is larger than largest so far
+    if (r < n && arr[r] > arr[largest])
+        largest = r;
+
+    // If largest is not root
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
+    }
+}
+
+// main function to do heap sort
+void heapSort(int arr[], int n)
+{
+    cout << "...Sortowanie przez kopcowanie..." << endl;
+    // Build heap (rearrange array)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+    // One by one extract an element from heap
+    for (int i = n - 1; i > 0; i--) {
+        // Move current root to end
+        swap(arr[0], arr[i]);
+
+        // call max heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+}
+
 
 void wyswietlTablice(int tab[], int rozmiar)
 {
@@ -139,7 +274,7 @@ void wyswietlTablice(int tab[], int rozmiar)
 
 void kopiowanieTablicy(int tabZrodlo[], int tabCel[], int rozmiar)
 {
-    cout << "kopiowanieTablicy" << endl;
+    //cout << "kopiowanieTablicy" << endl;
     for (int i = 0; i < rozmiar; i++)
     {
         tabCel[i] = tabZrodlo[i];
@@ -156,19 +291,19 @@ void pomiarCzasuStopIWyniki(struct timeval* begin, struct timeval* end){
     long microseconds = (*end).tv_usec - (*begin).tv_usec;
     double elapsed = seconds + microseconds*1e-9;
 
-    cout << "Czas wykonania: " << elapsed << endl;
+    cout << "Czas wykonania: " << elapsed <<  "  sek. " << endl;
 }
 
 int main()
 {
-    cout << "Program do sortowania!!!" << endl;
+    cout << "Program do porownania sortowania!!!" << endl;
 
 
-    int rozmiar = 10000;
+    int rozmiar = 50000;
     int dane[rozmiar];
 
-    int n = sizeof(dane)/sizeof(dane[0]); //dynamicznyc pomiar rozmiaru tablicy
-    cout << n << endl;
+    //int n = sizeof(dane)/sizeof(dane[0]); //dynamicznyc pomiar rozmiaru tablicy
+    //cout << n << endl;
 
 
     string fileName = "WE_NP_100000.txt" ;
@@ -197,22 +332,62 @@ int main()
     struct timeval begin2, end2;
     pomiarCzasuStart(&begin2);
 
-    cout << "...merge_sort..." << endl;
+    cout << "...sortowanie przez laczenie..." << endl;
     merge_sort(dane2, 0, rozmiar-1);
 
     pomiarCzasuStopIWyniki(&begin2,&end2);
     //wyswietlTablice(dane1, rozmiar);
 
-    //TEST nr 1
+    //TEST nr 3
     int dane3[rozmiar];
     kopiowanieTablicy(dane, dane3, rozmiar);
 
     struct timeval begin3, end3;
     pomiarCzasuStart(&begin3);
 
-    selectionSort(dane3,rozmiar);
+    cout << "...sortowanie przez laczenie v2..." << endl;
+    mergeSort2(dane3, 0, rozmiar-1);
 
-    pomiarCzasuStopIWyniki(&begin3,&end1);
+    pomiarCzasuStopIWyniki(&begin3,&end3);
+    //wyswietlTablice(dane1, rozmiar);
+
+
+    //TEST nr 4
+    int dane4[rozmiar];
+    kopiowanieTablicy(dane, dane4, rozmiar);
+
+    struct timeval begin4, end4;
+    pomiarCzasuStart(&begin4);
+
+    selectionSort(dane4,rozmiar);
+
+    pomiarCzasuStopIWyniki(&begin4,&end4);
+    //wyswietlTablice(dane1, rozmiar);
+
+
+    //TEST nr 5
+    int dane5[rozmiar];
+    kopiowanieTablicy(dane, dane5, rozmiar);
+
+    struct timeval begin5, end5;
+    pomiarCzasuStart(&begin5);
+
+    insertionSort(dane5,rozmiar);
+
+    pomiarCzasuStopIWyniki(&begin5,&end5);
+    //wyswietlTablice(dane1, rozmiar);
+
+
+    //TEST nr 5
+    int dane6[rozmiar];
+    kopiowanieTablicy(dane, dane6, rozmiar);
+
+    struct timeval begin6, end6;
+    pomiarCzasuStart(&begin6);
+
+    heapSort(dane6,rozmiar);
+
+    pomiarCzasuStopIWyniki(&begin6,&end6);
     //wyswietlTablice(dane1, rozmiar);
 
 
