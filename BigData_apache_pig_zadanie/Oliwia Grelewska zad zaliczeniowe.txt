@@ -1,0 +1,128 @@
+Etap 1. KOD
+
+temp_dyscypliny = LOAD '/input/assignments/olympic_history/athlete_events.csv' USING org.apache.pig.piggybank.storage.CSVLoader AS (
+Sex: boolean,
+Age: int,
+Height:int,
+Weight:double,
+NOC:chararray,
+Year:int,
+Season: boolean,
+City:  chararray,
+Sport:chararray,
+Medal:chararray);
+--DUMP temp_dyscylpiny;
+
+selected_data = FOREACH temp_dyscypliny GENERATE Height, Weight, Year, Sport, Medal;
+filter_data = FILTER selected_data BY (Medal is not null) and ((Medal == 'Gold') or (Medal == 'Bronze'));
+
+STORE filter_data INTO 'temp_dyscypliny_etap2_v3' USING PigStorage (',');
+X = LIMIT filter_data 20;
+DUMP X;
+
+Etap 1. Wyniki dla 20 pierwszy elementó
+
+(152,48.0,2004,Wrestling,Bronze)
+(155,56.0,1988,Weightlifting,Gold)
+(158,55.0,2004,Wrestling,Bronze)
+(158,57.0,1980,Equestrianism,Bronze)
+(163,59.0,2012,Hockey,Bronze)
+(163,63.0,2004,Softball,Bronze)
+(163,63.0,2008,Softball,Gold)
+(165,49.0,2016,Taekwondo,Bronze)
+(165,63.0,2008,Gymnastics,Bronze)
+(165,63.0,2008,Gymnastics,Bronze)
+(166,53.0,1968,Athletics,Bronze)
+(167,60.0,1964,Volleyball,Bronze)
+(168,51.0,2000,Boxing,Bronze)
+(168,55.0,1960,Athletics,Gold)
+(169,60.0,1980,Equestrianism,Gold)
+(170,66.0,2016,Volleyball,Bronze)
+(172,90.0,1964,Weightlifting,Gold)
+(173,64.0,2000,Swimming,Bronze)
+(173,64.0,2004,Swimming,Gold)
+(173,64.0,2004,Swimming,Gold)
+
+
+Etap 2. grupowanie po sportach, obliczniae BMI, i wyciąganie średniej AVG (średnia a nie miediana bo na zbirze takim duzym 
+nie ma czau na przetestowanie skomplikownej MEdiany)
+
+emp_dyscypliny_etap2 = LOAD 'temp_dyscypliny_etap2_v3' USING PigStorage(',') AS (
+Height:int,
+Weight:double,
+Year:int,
+Sport:chararray,
+Medal:chararray);
+
+
+selected_data2 = FOREACH temp_dyscypliny_etap2 GENERATE (Weight / Height * Height) AS bmi, Sport;
+grouped = GROUP selected_data2 BY Sport;
+grouped2 = FOREACH  grouped GENERATE group, AVG(selected_data2.bmi);
+
+STORE grouped2 INTO 'temp_dyscypliny_etap3_v1' USING PigStorage (',');
+
+X = LIMIT grouped2 20;
+DUMP X;
+--STORE grouped INTO 'filtered_dyscypliny_etap3_v1' USING PigStorage (',');
+
+Etap 2. Wyniki grupowania - dyscyplina i śeddnie BMI
+(Golf,78.66666666666667)
+(Judo,79.91309823677582)
+(Luge,79.08333333333333)
+(Rugby,74.0)
+(Boxing,67.49624060150376)
+(Diving,58.551886792452834)
+(Hockey,69.27564102564102)
+(Rowing,81.07248416608023)
+(Tennis,72.45762711864407)
+(Archery,71.17037037037036)
+(Curling,73.10989010989012)
+(Cycling,73.39928057553956)
+(Fencing,72.09214092140921)
+(Sailing,77.75166297117516)
+(Baseball,85.91891891891892)
+(Biathlon,66.927734375)
+(Canoeing,77.9928469241774)
+(Football,70.6027397260274)
+(Handball,81.73246329526917)
+(Lacrosse,66.5)
+
+
+etap 3. sortowanie i wyswietlenie wg BMI rosnąco
+temp_dyscypliny_etap3 = LOAD 'temp_dyscypliny_etap3_v1' USING PigStorage(',') AS (
+Sport:chararray,
+bmi:double);
+
+
+selected_data3 = FOREACH temp_dyscypliny_etap3 GENERATE Sport, bmi;
+order1 = ORDER selected_data3 BY bmi;
+
+X = LIMIT order1 3;
+DUMP X;
+
+etap3. wyniki rosnące BMI
+(Rhythmic Gymnastics,49.4)
+(Gymnastics,55.15989847715736)
+(Synchronized Swimming,56.05594405594405)
+
+
+etap 3.A sortowanie i wyswietlenie wg BMI malejąco
+temp_dyscypliny_etap3 = LOAD 'temp_dyscypliny_etap3_v1' USING PigStorage(',') AS (
+Sport:chararray,
+bmi:double);
+
+
+selected_data3 = FOREACH temp_dyscypliny_etap3 GENERATE Sport, bmi;
+order2 = ORDER selected_data3 BY bmi DESC;
+
+X = LIMIT order2 3;
+DUMP X;
+
+etap3.A wyniki Malejąco BMI
+
+(Bobsleigh,91.20430107526882)
+(Basketball,86.91728212703102)
+(Baseball,85.91891891891892)
+
+--Średnie najniższe bmi muszą mieć gimnastycy oraz pływacy, ponieważ w ich dyscyplinach ważne jest aby waga była mała
+--Średnie najwyższe bmi muszą mieć bobsleiści albo koszykarze, ponieważ ważna jest u nich większa waga albo duży wzrost.

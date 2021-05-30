@@ -1,0 +1,24 @@
+﻿Plik źródłowy (HDFS, zwiera wiersz nagłówkowy z nazwami kolumn): /input/assignments/olympic_history/athlete_events.csv
+
+Opis kolumn:
+
+Sex	[wartość binarna ∈ {'F', 'M'}]					Płeć zawodnika w momencie startu na igrzyskach
+Age	[liczba naturalna]						Wiek zawodnika w latach w momencie startu na igrzyskach
+Height	[liczba naturalna]						Wzrost zawodnika w cm. w momencie startu na igrzyskach
+Weight	[wartość zmiennoprzecinkowa]					Waga zawodnika w kg. w momencie startu na igrzyskach
+NOC	[ciąg znaków]							Kod kraju reprezentowany przez zawodnika w momencie startu na igrzyskach
+Year	[liczba naturalna]						Rok odbywania się igrzysk
+Season  [ciąg znaków]							Wskaźnik określający porę igrzysk: letnie albo zimowe
+City	[wartość binarna ∈ {'Summer', 'Winter'}]			Miasto, w którym odbywały się igrzyska
+Sport	[ciąg znaków]							Medalowa dyscyplina sportowa
+Medal   [wartość nominalna ∈ {null, 'Bronze', 'Gold', 'Silver'}]	Medal zdobyty (albo nie, jeżeli wartość jest pusta) przez zawodnika startującego w dyscyplinie sportowej na igrzyskach
+
+Technologia realizacji rozwiazania:
+Apache PIG
+
+Polecenie:
+
+Dla każdej z dyscyplin sportowych wyznaczyć medianę wskaźnika masy ciała (BMI: https://pl.wikipedia.org/wiki/Wskaźnik_masy_ciała) złotych i brązowych medalistów. Wyznaczyć po 3 dyscypliny sportowe o największym i najmniejszym stosunku mediany wskaźnika masy ciała medalistów złotych do brązowych.
+
+UWAGA: Należy wziąć pod uwagę, że nie dla wszystkich dyscyplin sportowych w historii trwania igrzysk olimpijskich przynano złote i brązowe medale.
+
